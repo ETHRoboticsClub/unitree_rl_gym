@@ -78,6 +78,13 @@ if __name__ == "__main__":
     policy = torch.jit.load(policy_path)
 
     with mujoco.viewer.launch_passive(m, d) as viewer:
+        # try to retrieve the GLFW window once (attribute name differs by version)
+        window = None
+        if hasattr(viewer, "_render_context"):
+            window = getattr(viewer._render_context, "window", None)
+        if window is None and hasattr(viewer, "render_context"):
+            window = getattr(viewer.render_context, "window", None)
+
         # Close the viewer automatically after simulation_duration wall-seconds.
         start = time.time()
         while viewer.is_running() and time.time() - start < simulation_duration:
@@ -93,7 +100,6 @@ if __name__ == "__main__":
                 # Apply control signal here.
 
                 # read keyboard input for command adjustment
-                window = viewer.user_scn.window
                 if window is not None:
                     if glfw.get_key(window, glfw.KEY_Z) == glfw.PRESS:
                         cmd[0] = np.clip(cmd[0] + 0.02, -config["max_cmd"][0], config["max_cmd"][0])
