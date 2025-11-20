@@ -110,7 +110,7 @@ if __name__ == "__main__":
                         cmd_changed = True
 
                     if cmd_changed:
-                        print(f"Cmd vx: {cmd[0]:.2f}")
+                        print(f"Cmd vx: {cmd[0]:.2f}", flush=True)
 
                 # create observation
                 qj = d.qpos[7:]
