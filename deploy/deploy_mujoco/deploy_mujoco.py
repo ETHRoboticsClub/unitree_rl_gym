@@ -6,6 +6,7 @@ import numpy as np
 from legged_gym import LEGGED_GYM_ROOT_DIR
 import torch
 import yaml
+import glfw
 
 
 def get_gravity_orientation(quaternion):
@@ -90,6 +91,14 @@ if __name__ == "__main__":
             counter += 1
             if counter % control_decimation == 0:
                 # Apply control signal here.
+
+                # read keyboard input for command adjustment
+                window = viewer.user_scn.window
+                if window is not None:
+                    if glfw.get_key(window, glfw.KEY_Z) == glfw.PRESS:
+                        cmd[0] = np.clip(cmd[0] + 0.02, -config["max_cmd"][0], config["max_cmd"][0])
+                    if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS:
+                        cmd[0] = np.clip(cmd[0] - 0.02, -config["max_cmd"][0], config["max_cmd"][0])
 
                 # create observation
                 qj = d.qpos[7:]
