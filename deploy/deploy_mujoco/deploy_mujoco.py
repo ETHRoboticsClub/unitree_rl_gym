@@ -137,8 +137,8 @@ if __name__ == "__main__":
                 target_dof_pos = action * action_scale + default_angles
 
             # Pick up changes to the physics state, apply perturbations, update options from GUI.
-            section = mujoco.const.GRID_TOPLEFT  # pick whichever slot you want
-            viewer._overlay[section] = []        # clear previous lines
+            section = mujoco.mjtGridPos.mjGRID_TOPLEFT
+            viewer._overlay[section] = []  # clear prior lines
             viewer.add_overlay(section, "Cmd vx", f"{cmd[0]:.2f}")
             viewer.add_overlay(section, "Cmd vy", f"{cmd[1]:.2f}")
             viewer.add_overlay(section, "Cmd yaw", f"{cmd[2]:.2f}")
