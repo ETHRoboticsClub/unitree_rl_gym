@@ -137,10 +137,11 @@ if __name__ == "__main__":
                 target_dof_pos = action * action_scale + default_angles
 
             # Pick up changes to the physics state, apply perturbations, update options from GUI.
-            viewer.remove_overlay(mujoco.const.GENERAL)
-            viewer.add_overlay(mujoco.const.GENERAL, "Cmd vx", f"{cmd[0]:.2f}")
-            viewer.add_overlay(mujoco.const.GENERAL, "Cmd vy", f"{cmd[1]:.2f}")
-            viewer.add_overlay(mujoco.const.GENERAL, "Cmd yaw", f"{cmd[2]:.2f}")
+            section = mujoco.const.GRID_TOPLEFT  # pick whichever slot you want
+            viewer._overlay[section] = []        # clear previous lines
+            viewer.add_overlay(section, "Cmd vx", f"{cmd[0]:.2f}")
+            viewer.add_overlay(section, "Cmd vy", f"{cmd[1]:.2f}")
+            viewer.add_overlay(section, "Cmd yaw", f"{cmd[2]:.2f}")
             viewer.sync()
 
             # Rudimentary time keeping, will drift relative to wall clock.
