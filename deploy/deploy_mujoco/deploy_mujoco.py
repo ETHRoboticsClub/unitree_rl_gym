@@ -101,10 +101,16 @@ if __name__ == "__main__":
 
                 # read keyboard input for command adjustment
                 if window is not None:
+                    cmd_changed = False
                     if glfw.get_key(window, glfw.KEY_Z) == glfw.PRESS:
                         cmd[0] = np.clip(cmd[0] + 0.02, -config["max_cmd"][0], config["max_cmd"][0])
+                        cmd_changed = True
                     if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS:
                         cmd[0] = np.clip(cmd[0] - 0.02, -config["max_cmd"][0], config["max_cmd"][0])
+                        cmd_changed = True
+
+                    if cmd_changed:
+                        print(f"Cmd vx: {cmd[0]:.2f}")
 
                 # create observation
                 qj = d.qpos[7:]
@@ -137,9 +143,6 @@ if __name__ == "__main__":
                 target_dof_pos = action * action_scale + default_angles
 
             # Pick up changes to the physics state, apply perturbations, update options from GUI.
-            viewer.add_overlay(section, "Cmd vx", f"{cmd[0]:.2f}")
-            viewer.add_overlay(section, "Cmd vy", f"{cmd[1]:.2f}")
-            viewer.add_overlay(section, "Cmd yaw", f"{cmd[2]:.2f}")
             viewer.sync()
 
             # Rudimentary time keeping, will drift relative to wall clock.
