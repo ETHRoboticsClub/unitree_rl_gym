@@ -6,7 +6,6 @@ import numpy as np
 from legged_gym import LEGGED_GYM_ROOT_DIR
 import torch
 import yaml
-import glfw
 
 
 def get_gravity_orientation(quaternion):
@@ -60,7 +59,7 @@ if __name__ == "__main__":
         num_actions = config["num_actions"]
         num_obs = config["num_obs"]
         
-        cmd = np.array(config["cmd_init"], dtype=np.float32)
+        cmd = np.zeros_like(np.array(config["cmd_init"], dtype=np.float32))
 
     # define context variables
     action = np.zeros(num_actions, dtype=np.float32)
@@ -78,13 +77,6 @@ if __name__ == "__main__":
     policy = torch.jit.load(policy_path)
 
     with mujoco.viewer.launch_passive(m, d) as viewer:
-        # try to retrieve the GLFW window once (attribute name differs by version)
-        window = None
-        if hasattr(viewer, "_render_context"):
-            window = getattr(viewer._render_context, "window", None)
-        if window is None and hasattr(viewer, "render_context"):
-            window = getattr(viewer.render_context, "window", None)
-
         # Close the viewer automatically after simulation_duration wall-seconds.
         start = time.time()
         while viewer.is_running() and time.time() - start < simulation_duration:
@@ -98,19 +90,6 @@ if __name__ == "__main__":
             counter += 1
             if counter % control_decimation == 0:
                 # Apply control signal here.
-
-                # read keyboard input for command adjustment
-                if window is not None:
-                    cmd_changed = False
-                    if glfw.get_key(window, glfw.KEY_Z) == glfw.PRESS:
-                        cmd[0] = np.clip(cmd[0] + 0.02, -config["max_cmd"][0], config["max_cmd"][0])
-                        cmd_changed = True
-                    if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS:
-                        cmd[0] = np.clip(cmd[0] - 0.02, -config["max_cmd"][0], config["max_cmd"][0])
-                        cmd_changed = True
-
-                    if cmd_changed:
-                        print(f"Cmd vx: {cmd[0]:.2f}", flush=True)
 
                 # create observation
                 qj = d.qpos[7:]
