@@ -6,7 +6,7 @@ import numpy as np
 from legged_gym import LEGGED_GYM_ROOT_DIR
 import torch
 import yaml
-from inputs import get_gamepad, UnpluggedError
+import glfw
 
 
 def get_gravity_orientation(quaternion):
@@ -98,21 +98,13 @@ if __name__ == "__main__":
             if counter % control_decimation == 0:
                 # Apply control signal here.
 
-                # read joystick input for command adjustment
-                try:
-                    events = get_gamepad()
-                    for event in events:
-                        if event.code == "ABS_Y":
-                            value = -event.state / 32768.0
-                            cmd[0] = np.clip(value * config["max_cmd"][0], -config["max_cmd"][0], config["max_cmd"][0])
-                        elif event.code == "ABS_X":
-                            value = event.state / 32768.0
-                            cmd[1] = np.clip(value * config["max_cmd"][1], -config["max_cmd"][1], config["max_cmd"][1])
-                        elif event.code == "ABS_RX":
-                            value = event.state / 32768.0
-                            cmd[2] = np.clip(value * config["max_cmd"][2], -config["max_cmd"][2], config["max_cmd"][2])
-                except UnpluggedError:
-                    pass
+                # read keyboard input for command adjustment
+                if window is not None:
+                    delta = 0.1
+                    if glfw.get_key(window, glfw.KEY_UP) == glfw.PRESS:
+                        cmd[0] = np.clip(cmd[0] + delta, -config["max_cmd"][0], config["max_cmd"][0])
+                    if glfw.get_key(window, glfw.KEY_DOWN) == glfw.PRESS:
+                        cmd[0] = np.clip(cmd[0] - delta, -config["max_cmd"][0], config["max_cmd"][0])
 
                 # create observation
                 qj = d.qpos[7:]
