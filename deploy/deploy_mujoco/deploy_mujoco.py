@@ -137,7 +137,7 @@ if __name__ == "__main__":
                 target_dof_pos = action * action_scale + default_angles
 
             # Pick up changes to the physics state, apply perturbations, update options from GUI.
-            viewer.user_scn.ntext = 0  # clear previous overlays
+            viewer.remove_overlay(mujoco.const.GENERAL)
             viewer.add_overlay(mujoco.const.GENERAL, "Cmd vx", f"{cmd[0]:.2f}")
             viewer.add_overlay(mujoco.const.GENERAL, "Cmd vy", f"{cmd[1]:.2f}")
             viewer.add_overlay(mujoco.const.GENERAL, "Cmd yaw", f"{cmd[2]:.2f}")
